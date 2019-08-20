@@ -11,9 +11,20 @@
 ###############
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
-resultsPath <- file.path(path, "SSP5")                               # Path to results folder 
-inputsPath  <- file.path(path, "State_Inputs")                       # Path to state-level inputs folder
-mspackage   <- file.path(path, "Scripts", "multistate_0.1.0.tar.gz") # Path to scripts directory where .R file containing functions is stored; functions will be sourced to be used in the script
+# Path to results folder 
+resultsPath <- file.path(path, "SSP5")
+
+# Path to state-level inputs folder
+inputsPath  <- file.path(path, "State_Inputs") 
+
+# Path to the package
+mspackage   <- file.path(path, "Scripts", "multistate_0.1.0.tar.gz") 
+
+# UN standard life table e0=30; used for linear interpolation of lx values
+datMortS30S  <- file.path(path, "AllRegions_mortality_UNe030.csv")  
+
+# UN standard life table e0=100; used for linear interpolation of lx values
+datMortS100S <- file.path(path, "AllRegions_mortality_UNe0100.csv") 
 
 
 #######################
@@ -98,9 +109,6 @@ useBrassf <- T # TRUE (use Brass); FALSE (use scaling)
 #* Generate Directories
 if(!file.exists(resultsPath)) {dir.create(resultsPath)} # output directory
 
-
-datMortS100S <- file.path(path, "AllRegions_mortality_UNe0100.csv") # UN standard life table e0=100; used for linear interpolation of lx values
-datMortS30S  <- file.path(path, "AllRegions_mortality_UNe030.csv")  # UN standard life table e0=30; used for linear interpolation of lx values
 datMortS100  <- read.csv(datMortS100S, check.names = F, stringsAsFactors = F) 
 datMortS30   <- read.csv(datMortS30S, check.names = F, stringsAsFactors = F) 
 

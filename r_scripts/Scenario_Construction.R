@@ -12,8 +12,17 @@ cur.scenario <- "SSP2"
 
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
-results.path <- file.path(path, cur.scenario) # Path to results folder 
-mspackage    <- file.path(path, "Scripts", "multistate_0.1.0.tar.gz") # Path to scripts directory where .R file containing functions is stored; functions will be sourced to be used in the script
+# Path to results folder 
+results.path <- file.path(path, cur.scenario)
+
+# Path to the package
+mspackage    <- file.path(path, "Scripts", "multistate_0.1.0.tar.gz")
+
+# File that contains fertility and international migration historical series
+history.file  <- file.path(path, "USA_historical.xlsx")
+
+# File that contains fertility, mortality and international migration scenarios for SSPs from IIASA
+iiasa.file  <- file.path(path, "USA population projection scenarios_SSPs.xlsx")
 
 
 #######################
@@ -64,11 +73,6 @@ if (cur.scenario != "Constant_rate"){
                                 "Dom_Mig_Factor")
   scenario.table$Year      <- year.start:year.end
   
-  # Read the file that contains fertility and international migration historical series
-  history.file  <- file.path(path, "USA_historical.xlsx")
-  
-  # Read the file that contains fertility, mortality and international migration scenarios for SSPs from IIASA
-  iiasa.file  <- file.path(path, "USA population projection scenarios_SSPs.xlsx")
   iiasa.table <- as.data.frame(read_excel(iiasa.file, sheet = cur.scenario))
   iiasa.table <- iiasa.table[iiasa.table$year >= year.start,]
   

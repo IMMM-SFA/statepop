@@ -35,8 +35,13 @@ options("scipen"=100, "digits"=4) # to force R not to use scientific notations
 # Workspace
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
+# IIASA's population projections for the U.S.
+iiasa.us.csv <- file.path(path, "US_IIASA_Pop.csv")
+
 scenario     <- "SSP2"
-results.path <- file.path(path, scenario) # Path to results folder 
+
+# Path to results folder 
+results.path <- file.path(path, scenario) 
 
 
 ###################################
@@ -72,7 +77,6 @@ pop.dataframe$Pop  <- pop.dataframe$Pop/1000000
 
 
 # Read and standardize the IIASA population for comparison plots
-iiasa.us.csv <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/US_IIASA_Pop.csv"
 iiasa.us.df  <- read.csv(iiasa.us.csv, stringsAsFactors = F, check.names = F) 
 iiasa.us.df  <- iiasa.us.df[, c("Scenario", as.character(seq(2010, 2100, 5)))]
 
