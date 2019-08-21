@@ -53,3 +53,16 @@ In order to produce results, the scripts should be run in a particular order. In
 - Single_State_Vis.R (Generates additional output)
   - For each state, it plots population change from 2010 to 2100 based on assuming no migration, only international
   migration and both international and domestic migration.
+
+- state_level_pop_vis.py (Generates additional output)
+  - This is a script for displaying maps of state-level population growths according to
+  different scenarios using our multi-state population projection model.
+
+- state_level_upscaled_vis.py (Generates additional output)
+  - This is a script for displaying maps of state-level population growths according to
+  different SSPs by upscaling national-level population grids to state boundaries.
+
+# Package
+In addition to standard packages necessary to run our scripts, We also have an R package, called multistate
+that can be installed using the source file multistate_0.1.0.tar.gz. This package includes functions that
+we wrote for our analysis.
