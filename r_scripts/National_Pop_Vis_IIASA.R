@@ -38,7 +38,7 @@ path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilatera
 # IIASA's population projections for the U.S.
 iiasa.us.csv <- file.path(path, "US_IIASA_Pop.csv")
 
-scenario     <- "SSP2"
+scenario <- "SSP2"
 
 # Path to results folder 
 results.path <- file.path(path, scenario) 

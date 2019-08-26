@@ -15,7 +15,7 @@ options("scipen"=100, "digits"=4) # to force R not to use scientific notations
 # Workspace
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
-scenario     <- "SSP2"
+scenario <- "No_Mig"
 
 # Path to results folder
 results.path <- file.path(path, scenario)  

@@ -27,6 +27,9 @@ options("scipen"=100, "digits"=4) # to force R not to use scientific notations
 # Workspace
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
+# The csv containing states, regions and dividions
+states.csv <- file.path(path, "Regions_Divisions.csv")
+
 scenario     <- "SSP2"
 results.path <- file.path(path, scenario) # Path to results folder 
 
@@ -41,7 +44,6 @@ num.ages <- 101 #From 0 to 100
 #***              Main Body              ***#
 #############################################
 # Read the csv containing states, regions and dividions
-states.csv        <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Regions_Divisions.csv"
 states.regions.df <- read.csv(states.csv, stringsAsFactors = F, check.names = F)
 
 #Create a list of states and regions

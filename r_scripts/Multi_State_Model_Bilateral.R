@@ -12,7 +12,7 @@
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
 # Path to results folder 
-resultsPath <- file.path(path, "SSP5")
+resultsPath <- file.path(path, "No_Mig")
 
 # Path to state-level inputs folder
 inputsPath  <- file.path(path, "State_Inputs") 
@@ -41,7 +41,7 @@ if ("foreign" %in% installed.packages())
 
 if ("Matrix" %in% installed.packages())
 {
-  library(foreign)
+  library(Matrix)
 } else {
   install.packages("Matrix")
   library(Matrix)
@@ -91,14 +91,14 @@ regUAll <- c("9-CT", "23-ME", "25-MA", "33-NH", "44-RI", "50-VT", "34-NJ", "36-N
 
 #* Specify scenario
 scenUAll     <- c("Constant_rate", "SSP2", "SSP3", "SSP5")
-cur.scenario <- "SSP5"
+cur.scenario <- "Constant_rate"
 
 # Specify the domestic migration factor
 # If scenario is not "Constant_rate" (for fertility, mortality and international migration), this factor will become dynamic later
-scen.factor <- 1 # 1 for regular, 0 for no domestic migration, 0.5 for half scenario and 2 for double scenario
+scen.factor <- 0 # 1 for regular, 0 for no domestic migration, 0.5 for half scenario and 2 for double scenario
 
 # Sepecify if international migration is applied
-int.mig <- 1 # 1 applied 0 not applied
+int.mig <- 0 # 1 applied 0 not applied
 
 #* Should details for projection model adjustment be printed?
 vis <- F # TRUE (print details); FALSE (don't print details)
@@ -131,6 +131,10 @@ tot.projection    <- NULL
 tot.state.net.mig <- NULL
 tot.state.in.mig  <- NULL
 tot.state.out.mig <- NULL
+
+# This dataframe holds population values before applying domestic migration. It is necessary to disaggregate
+# domestic migration to/from each state across all other states 
+tot.pop.no.dom    <- NULL 
 
 # Initialize a dataframe for holding international migration for all years and states
 tot.int.mig           <- data.frame(matrix(NA, nrow = 4*num.ages*(steps+1), ncol = length(regUAll)))
@@ -228,6 +232,9 @@ for (regU in 1:length(regUAll)){
 in.migration  <- f.in.dom.mig.calc(inputsPath, upd.all.base.pop, scen.factor)
 out.migration <- f.out.dom.mig.calc(inputsPath, upd.all.base.pop, scen.factor)
 net.migration <- in.migration - out.migration # People entered a state minus those who left
+
+# Store the population before applying the domestic migration
+tot.pop.no.dom <- rbind(tot.pop.no.dom, upd.all.base.pop)
 
 #Update the base year population with the state-level migration
 upd.all.base.pop   <- upd.all.base.pop + net.migration
@@ -816,7 +823,7 @@ for (t in 1:steps){
     }
     
     #* Domestic urban/rural migration data
-    #* Urban/rural migration data in the base year (it's currently assumes that there is nor urban/rural migration)
+    #* Urban/rural migration data in the base year (it's currently assumes that there is no urban/rural migration)
     datDomMigS  <- "domMig.csv" # file containing domestic migration rates
     datDomMig   <- read.csv(file.path(pathIn, datDomMigS), check.names=F, stringsAsFactors=F)
     
@@ -951,6 +958,8 @@ for (t in 1:steps){
     net.migration <- in.migration - out.migration # People entered a state minus those who left
   }
   
+  # Store the population before applying the domestic migration
+  tot.pop.no.dom <- rbind(tot.pop.no.dom, upd.pop)
   
   # Update the projected population with the state-level migration, this will be used for the next year
   upd.pop <- upd.pop + net.migration
@@ -973,6 +982,9 @@ for (t in 1:steps){
 
 # Create a csv file that contains population for all states and years
 write.csv(tot.projection, file.path(resultsPath, "state_pop_projections.csv"), row.names = F)
+
+# Create a csv file that contains population for all states and years before applying domestic migration
+write.csv(tot.pop.no.dom, file.path(resultsPath, "state_pop_projections_no_dom.csv"), row.names = F)
 
 # Create a csv file that contains state-level net migration values for all states and years
 write.csv(tot.state.net.mig, file.path(resultsPath, "state_net_migrations.csv"), row.names = F)

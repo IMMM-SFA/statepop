@@ -14,9 +14,17 @@ options("scipen"=100, "digits"=4) # to force R not to use scientific notations
 # Workspace
 path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
-resultsPath <- file.path(path, "SSP5")                               # Path to results folder 
-inputsPath  <- file.path(path, "State_Inputs")                       # Path to state-level inputs folder
-mspackage   <- file.path(path, "Scripts", "multistate_0.1.0.tar.gz") # Path to scripts directory where .R file containing functions is stored; functions will be sourced to be used in the script
+# Path to results folder 
+resultsPath <- file.path(path, "Doub_Scenario")  
+
+# Path to state-level inputs folder
+inputsPath  <- file.path(path, "State_Inputs")
+
+# Path to the pachage
+mspackage   <- file.path(path, "Scripts", "multistate_0.1.0.tar.gz") 
+
+# csv file containing population projection with no domestic migration applied
+pop.no.dom.proj <- file.path(resultsPath, "state_pop_projections_no_dom.csv")
 
 
 #######################
@@ -50,11 +58,11 @@ regUAll <- c("9-CT", "23-ME", "25-MA", "33-NH", "44-RI", "50-VT", "34-NJ", "36-N
 
 #* Specify scenario
 scenUAll     <- c("Constant_rate", "SSP2", "SSP3", "SSP5")
-cur.scenario <- "SSP5"
+cur.scenario <- "Constant_rate"
 
 # Specify the domestic migration factor
 # If scenario is not "Constant_rate" (for fertility, mortality and international migration), this factor will become dynamic later
-scen.factor <- 1 # 1 for regular, 0 for no domestic migration, 0.5 for half scenario and 2 for double scenario
+scen.factor <- 2 # 1 for regular, 0 for no domestic migration, 0.5 for half scenario and 2 for double scenario
 
 # Sepecify if international migration is applied
 int.mig <- 1 # 1 applied 0 not applied
@@ -84,78 +92,7 @@ if (cur.scenario != "Constant_rate"){
 pop.upd.df           <- data.frame(matrix(0, nrow = num.ages * 4, ncol = length(regUAll)))
 colnames(pop.upd.df) <- regUAll
 
-tot.upd.pop <- NULL
-for (t in 0:90){
-  
-  cat(paste("Current time step is", 2010 + t, "\n"))
-  for (regU in 1:length(regUAll)){
-    
-    #* Generate paths
-    pathIn  <- file.path(inputsPath, regUAll[regU])  # Input data directory
-    pathOut <- file.path(resultsPath, regUAll[regU])  # Output data directory
-    
-    #* Population
-    pop.csv <- paste0(regUAll[regU],"_proj_pop.csv")
-    pop.df  <- read.csv(file.path(pathOut, pop.csv), check.names = F, stringsAsFactors = F)  # Input data directory
-    
-    #* Scenario data (The Constant_rate scenario. )
-    scenarioS <- paste0(scenUAll[1], ".csv")
-    scenario  <- read.csv(file.path(pathIn, scenarioS), check.names = F, stringsAsFactors = F)  # Input data directory
-    
-    #* International migration data
-    # Note: The international migration rates input data needs to be in relative rates (summing up to 1)
-    datNetMigS  <- "intMig.csv"           # file containing international migration rates
-    datNetMig   <- read.csv(file.path(pathIn, datNetMigS), check.names = F, stringsAsFactors = F)
-    
-    # Variables
-    netMigAge  <- "age"                   # Age variable
-    netMigF    <- "net_female"            # Proportion of net migration for each age group for females 
-    netMigM    <- "net_male"              # Proportion of net migration for each age group for males
-    
-    # Annual total net international migration counts for 5-year periods
-    nMigFt     <- as.numeric(scenario[scenario$year%in%c(yearStart:yearEnd), "nim_F"]) # female net international migrants
-    nMigMt     <- as.numeric(scenario[scenario$year%in%c(yearStart:yearEnd), "nim_M"]) # male net international migrants
-    
-    # Modify the constant rate scenario international migration assumptions if current scenario is something else
-    if (cur.scenario != scenUAll[1]){
-      
-      # Retrive the national-level changes of net international migration according to the current scenario
-      net.int.mig.f.rate <- cumprod(scenario.table[, "Int_Mig_change"])
-      net.int.mig.m.rate <- cumprod(scenario.table[, "Int_Mig_change"])
-      
-      # Apply the national-level rates to the state-level net inernational migration assumptions
-      nMigFt <- net.int.mig.f.rate[1:(length(net.int.mig.f.rate) - 1)] * nMigFt[1]
-      nmdf1F <- data.frame(year = 0:90, nm = c(nMigFt[1], nMigFt))
-      nMigMt <- net.int.mig.m.rate[1:(length(net.int.mig.m.rate) - 1)] * nMigMt[1]
-      nmdf1M <- data.frame(year = 0:90, nm = c(nMigMt[1], nMigMt))
-    }
-    
-    # Linearly interpolate 1-year total net international migration counts between 5-year intervals 
-    nmdf1F <- f.linIntE(nMigFt, "nm", si = T)
-    nmdf1M <- f.linIntE(nMigMt, "nm", si = T)
-    
-    # Spread migrant numbers according to profile
-    if (int.mig == 1){
-      datNetMig[, "nmUF"] <- datNetMig[, netMigF] * nmdf1F[nmdf1F[, "year"] == t, "nm"]  # urban females
-      datNetMig[, "nmRF"] <- datNetMig[, netMigF] * 0                                    # rural females
-      datNetMig[, "nmUM"] <- datNetMig[, netMigM] * nmdf1M[nmdf1M[, "year"] == t, "nm"]  # urban males
-      datNetMig[, "nmRM"] <- datNetMig[, netMigM] * 0                                    # rural males
-    } else {
-      datNetMig[, "nmUF"] <- datNetMig[, netMigF] * 0   # urban females
-      datNetMig[, "nmRF"] <- datNetMig[, netMigF] * 0   # rural females
-      datNetMig[, "nmUM"] <- datNetMig[, netMigM] * 0   # urban males
-      datNetMig[, "nmRM"] <- datNetMig[, netMigM] * 0   # rural males
-    }
-    
-    
-    # Update the base year population with the international migration rates
-    pop.upd.df[, regUAll[regU]] <- pop.df[, as.character(2010 + t)] + c(rbind(datNetMig[1:num.ages, "nmUF"], datNetMig[1:num.ages, "nmRF"]),
-                                                                        rbind(datNetMig[1:num.ages, "nmUM"], datNetMig[1:num.ages, "nmRM"]))
-  }
-  
-  tot.upd.pop <- rbind(tot.upd.pop, pop.upd.df)
-  
-}
+tot.upd.pop <- read.csv(pop.no.dom.proj, stringsAsFactors = F, check.names = F)
 
 
 #Save two dataframes per state: one for in-migration from other states and two for out-migration to other states

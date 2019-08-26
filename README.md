@@ -8,6 +8,7 @@ These scripts are:
   - Scenario_Construction.R
   - Multi_State_Model_Bilateral.R
   - First_Pop_Add.R
+  - State_Level_Migration.R
   - Pop_Dis_Vis.R
   - Regional_Migration_Vis.R
   - National_Pop_Vis_IIASA.R
@@ -36,6 +37,14 @@ In order to produce results, the scripts should be run in a particular order. In
 - First_Pop_Add.R (Modifies output)
   - Adds the base-year population to the projected population table that starts with 2011. After running
   this script, the resulting population table starts with 2010.
+
+- State_Level_Migration.R (Generates additional output)
+  - Generates two dataframes for each state, one migration numbers from all other states to the current state,
+  and the other migration from the current state to all other states.
+
+- Regional_Migration_Vis.R
+  - Visualizes projected regional migration from each region (south, west, midwest, northeast) to the others
+  based on the migration numbers of the constituent states of each region.  
 
 - Pop_Dis_Vis.R (Generates additional output)
   - Visualizes contributing factors to U.S. state-level population. For each state, it disaggregates population change

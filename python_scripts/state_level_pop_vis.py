@@ -16,7 +16,7 @@ import plotly.io as pio
 ####################################################
 #Variables
 base_folder      = r"C:\Users\Hamidreza.Zoraghein\Google Drive\sensitivity_analysis\Bilateral"
-scenario         = "SSP2"
+scenario         = "Half_Scenario"
 period           = "1050"
 cur_proj_results = os.path.join(base_folder, scenario)
 
