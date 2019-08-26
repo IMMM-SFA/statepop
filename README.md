@@ -42,9 +42,9 @@ In order to produce results, the scripts should be run in a particular order. In
   - Generates two dataframes for each state, one migration numbers from all other states to the current state,
   and the other migration from the current state to all other states.
 
-- Regional_Migration_Vis.R
+- Regional_Migration_Vis.R (Generates additional output)
   - Visualizes projected regional migration from each region (south, west, midwest, northeast) to the others
-  based on the migration numbers of the constituent states of each region.  
+  based on migration numbers of the constituent states of each region.  
 
 - Pop_Dis_Vis.R (Generates additional output)
   - Visualizes contributing factors to U.S. state-level population. For each state, it disaggregates population change
