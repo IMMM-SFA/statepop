@@ -25,7 +25,7 @@ options("scipen"=100, "digits"=4) # to force R not to use scientific notations
 #*** Paths ***#
 ###############
 # Workspace
-path <- "C:/Users/Hamidreza.Zoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
+path <- "C:/Users/hzoraghein/Google Drive/Sensitivity_Analysis/Bilateral"
 
 # The csv containing states, regions and dividions
 states.csv <- file.path(path, "Regions_Divisions.csv")
@@ -151,6 +151,7 @@ write.csv(regions.mig.df, regions.mig.csv, row.names = F)
 
 
 # Visualize regional migration patterns per region
+colrs <- c("West" = "blue", "South" = "red", "Northeast" = "green", "Midwest" = "violet")
 for (region in regions){
   
   cur.region.df <- regions.mig.df[regions.mig.df$Focal_Region == region,]
@@ -161,6 +162,7 @@ for (region in regions){
     labs(title = paste("Regional Net Migration Change for", region), x = "Year", y = "Migrants") +
     scale_x_continuous(breaks = seq(2010, 2100, by = 10)) +
     scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+    scale_color_manual(values = colrs) +
     theme_bw() +
     theme(plot.title   = element_text(size = 25, face = "bold", hjust = 0.5), 
           axis.text.x  = element_text(size = 18, angle = 45, margin = margin(15,0,0,0)), 

@@ -15,10 +15,10 @@ import plotly.io as pio
 
 ####################################################
 #Variables
-base_folder      = r"C:\Users\Hamidreza.Zoraghein\Google Drive\sensitivity_analysis\Bilateral"
-upscaled_pop_csv = r"C:\Users\Hamidreza.Zoraghein\Google Drive\Google_Drive\Population Analysis\US_Pop\AllStatesProjection.csv"
-scenario         = "SSP3"
-period           = "1050"
+base_folder      = r"C:\Users\hzoraghein\Google Drive\sensitivity_analysis\Bilateral"
+upscaled_pop_csv = os.path.join(base_folder, "AllStatesProjection.csv")
+scenario         = "SSP2"
+period           = "10100"
 cur_proj_results = os.path.join(base_folder, scenario)
 states           = ["9-Connecticut", "23-Maine", "25-Massachusetts", "33-New_Hampshire", "44-Rhode_Island",
                     "50-Vermont", "34-New_Jersey", "36-New_York", "42-Pennsylvania", "17-Illinois", "18-Indiana",
@@ -37,8 +37,6 @@ state_abbs      = ["9-CT", "23-ME", "25-MA", "33-NH", "44-RI", "50-VT", "34-NJ",
 
 ####################################################
 #Main program
-#Set the credentials for plotly plotting
-tls.set_credentials_file(username = "hrz1365", api_key="yxqCpL0cVn3ynfC4gQOb")
 
 #Create a blank population dataframe holding states and their aggregate populations in 2010, 2050 and 2100 
 indexes = [int(state.split("-")[0]) for state in states]
@@ -74,22 +72,23 @@ pop_df["change_10100"] = ((pop_df["Pop_2100"] - pop_df["Pop_2010"]) / pop_df["Po
 #Categorize population change columns 
 #From 2010 to 2050
 pop_df['class_1050'] = pd.cut(pop_df.change_1050, 
-                              bins = [-999, -35, -20, -5, 5, 20, 35, 50, 999], 
-                              labels = [0, 1, 2, 3, 4, 5, 6, 7],
+                              bins = [-999, -35, -20, -5, 5, 20, 35, 50, 75, 100, 999], 
+                              labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
                               include_lowest = True)
 
 #From 2010 to 2100
 pop_df['class_10100'] = pd.cut(pop_df.change_10100, 
-                              bins = [-999, -35, -20, -5, 5, 20, 35, 50, 999], 
-                              labels = [0, 1, 2, 3, 4, 5, 6, 7],
+                              bins = [-999, -35, -20, -5, 5, 20, 35, 50, 75, 100, 999], 
+                              labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
                               include_lowest = True)
 
 #Construct the colorscale for plotting
-scl = [[0, 'brown'], [0.125, 'brown'], [0.125, 'rgb(255,70,0)'], [0.25, 'rgb(255,70,0)'],
-        [0.25, 'rgb(251,154,153)'], [0.375, 'rgb(251,154,153)'], [0.375, 'rgb(170, 170, 170)'], 
-        [0.5, 'rgb(170, 170, 170)'], [0.5, 'rgb(255,220,0)'], [0.625, 'rgb(255,220,0)'], [0.625, 'palegreen'],
-        [0.75, 'palegreen'], [0.75, 'rgb(40,210,0)'], [0.875, 'rgb(40,210,0)'],
-        [0.875, 'darkgreen'], [1, 'darkgreen']]
+scl = [[0, 'brown'], [0.1, 'brown'], [0.1, 'rgb(255,70,0)'], [0.2, 'rgb(255,70,0)'],
+        [0.2, 'rgb(251,154,153)'], [0.3, 'rgb(251,154,153)'], [0.3, 'rgb(170, 170, 170)'], 
+        [0.4, 'rgb(170, 170, 170)'], [0.4, 'rgb(255,220,0)'], [0.5, 'rgb(255,220,0)'], [0.5, 'palegreen'],
+        [0.6, 'palegreen'], [0.6, 'rgb(73,252,28)'], [0.7, 'rgb(73,252,28)'],
+        [0.7, 'rgb(40,202,0)'], [0.8, 'rgb(40,202,0)'], [0.8, 'rgb(31,137,5)'], [0.9, 'rgb(31,137,5)'],
+        [0.9, 'darkgreen'], [1, 'darkgreen']]
 
 #Variables for the plot title
 if   period == "1050": duration = "2010-2050"
@@ -111,7 +110,7 @@ data = [ dict(
         colorscale = scl,
         autocolorscale = False,
         locations = pop_df['state_abb'],
-        z = pop_df['class_{0}'.format(period)].append(pd.Series([0, 1, 2, 3, 4, 5, 6, 7])),
+        z = pop_df['class_{0}'.format(period)].append(pd.Series([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])),
         locationmode = 'USA-states',
         marker = dict(
             line = dict (
@@ -126,9 +125,9 @@ data = [ dict(
             len = 0.75,
             yanchor = "middle",
             tickmode = "array",
-            tickvals = [0.45, 1.3, 2.2, 3.05, 3.9, 4.8, 5.7, 6.55],
+            tickvals = [0.45, 1.3, 2.2, 3.1, 4.0, 4.9, 5.8, 6.7, 7.6, 8.5],
             ticktext = ["< -35", "-35 - -20", "-20 - -5", "-5 - 5", "5 - 20",
-                        "20 -35", "35 - 50", "> 50"],
+                        "20 -35", "35 - 50", "50 - 75", "75 - 100", "> 100"],
             tickfont = dict(
                     size  = 19,
                     color = 'black')
@@ -136,13 +135,15 @@ data = [ dict(
         ) ]
 
 layout = dict(
-        title  = 'Percentage of Population Change ({0}) after Upscaling National Population Grids <br> According to "{1}" Scenario'.format(duration, scenario_title),
-        font = dict(size = 23, family = "Arial"),
+        title  = dict(text = 'Percentage of Population Change ({0}) after Upscaling National Population Grids <br> According to "{1}" Scenario'.format(duration, scenario_title),
+                      x = 0.5, xanchor = "center"),
+        font   = dict(size = 23, family = "Arial"),
         width  = 1400,
         height = 780,
         margin = dict(l=0, r=0, b=10, t=100, pad=10),
         geo = dict(
             scope = "usa",
+            showlakes = False,
             projection = dict(type = "albers usa"),
             center = dict(
                     lon = -94, lat = 38),
