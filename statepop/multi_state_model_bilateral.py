@@ -5,7 +5,7 @@ import matplotlib
 import statepop.multistate as multi
 
 # Path to results folder (ask Chris how to handle)
-results_path = []
+results_path = pkg_resources.resource_filename('statepop', 'data/inputs/No_Mig')
 
 # Path to state-level inputs folders
 state_inputs = pkg_resources.resource_filename('statepop', 'data/State_Inputs')
