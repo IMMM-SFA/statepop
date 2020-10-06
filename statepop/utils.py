@@ -5,13 +5,20 @@ import pandas as pd
 def get_state_dirs(root_dir, delimeter='-', target_index=0):
     """Get a list of the full file path to the state directories
 
-    :param root_dir                 A full path with file name and extension to the directory containing the state level data
+    :param root_dir                 A full path with file name and extension to the directory
+                                    containing the state level data.
 
     :type root_dir:                 str
 
-    :param ..:
+    :param delimeter:               (Optional) Character that separates state directories from
+                                    other non-target directories. Default is '-'.
+    :type delimeter:                str
 
-    :return:                        A list of full path...
+    :param target_index:            (Optional) Index to start search, default is 0.
+
+    :type target_index:             int
+
+    :return:                        A list of full paths to the state directories.
 
     """
     
@@ -28,12 +35,59 @@ def get_state_dirs(root_dir, delimeter='-', target_index=0):
     return state_dirs
 
 
-def get_contents_file_list(state_dirs, target_file):
+def sort_dirs_by_number(dir_list):
+    """Sort directories by their leading number.
+
+    :param dir_list:      List if directories containing a "<number>_<abbrev>" structure
+    :type dir_list:       list
+
+    :return:              List of sorted directories by leading number
+
+    """
+
+    # create a dictionary of {state_id_integer: directory_name, ...}
+    d_states = {int(i.split('-')[0]): i for i in dir_list}
+
+    return [d_states[k] for k in sorted(d_states.keys())]
+
+def alphabetize_states():
+    """Sort directories by their leading number within the dataset.
+
+    :return:              List of sorted directories by leading number
+
+    """
+
+    # Path to state-level inputs folders
+    state_inputs = pkg_resources.resource_filename('statepop', 'data/State_Inputs')
+
+    # List of states, alphebetized
+    states_list = [i for i in os.listdir(state_inputs) if '.DS_Store' not in i]
+    states_list = sorted(states_list, key=lambda x: int(x.split('-')[0]))
+
+    return states_list
+
+
+def get_target_file_list(state_dirs, target_file):
+    """Retrieves full path of target file.
+
+    :param state_dirs:      A list of full paths to state directories
+
+    :type state_dirs:       str
+
+    :param target_file:     CSV file to be retrieved
+
+    :type target_file:      str
+
+    :return:                Full path to target file.
+
+    """
+
+    # Path to state-level inputs folders
     csv_files = []
     for i in state_dirs:
 
-        contents = os.listdir(i)
-        if target_file in contents:
+        target_dirs = os.listdir(i)
+        if target_file in target_dirs:
             csv_files.append(os.path.join(i, target_file))
 
         else:
@@ -44,42 +98,55 @@ def get_contents_file_list(state_dirs, target_file):
 
 
 def retrieve_csv(state_abbr, target_file):
+    """Retrieve indicated state's specified csv file.
+
+    :param state_abbr:              Two-character state abbreviations
+
+    :type state_abbr:               str
+
+    :param target_file:             CSV file to retrieve
+
+    :type target_file:              str
+
+    :return:                        Target CSV file as a pandas DataFrame
+
+    """
+
     # Path to state-level inputs folders
     state_inputs = pkg_resources.resource_filename('statepop', 'data/State_Inputs')
     state_dir_list = get_state_dirs(state_inputs)  # Input data directory
-    
+
     # List of states, alphebetized
-    states_list = os.listdir(state_inputs)
-    states_list = sorted(states_list, key = lambda x: int(x.split('-')[0]))
+    states_list = alphabetize_states()
     target_state = [s for s in states_list if state_abbr in s]
 
     if target_file == 'Constant_rate.csv':
-        file_list = get_contents_file_list(state_dir_list, target_file=target_file)
+        file_list = get_target_file_list(state_dir_list, target_file=target_file)
         file = [i for i in file_list if target_state[0] in i][0]
 
         df = pd.read_csv(file, skiprows=[1, 2, 3])
 
     elif target_file == 'mortality.csv':
-        file_list = get_contents_file_list(state_dir_list, target_file=target_file)
+        file_list = get_target_file_list(state_dir_list, target_file=target_file)
         file = [i for i in file_list if target_state[0] in i][0]
 
         df = pd.read_csv(file, usecols=['region', 'age', 'lx_rural_female',
                                         'lx_rural_male', 'lx_urban_female', 'lx_urban_male'])
 
     elif target_file == '_in_mig.csv':
-        file_list = get_contents_file_list(state_dir_list, target_file=f'{target_state[0]}_in_mig.csv')
+        file_list = get_target_file_list(state_dir_list, target_file=f'{target_state[0]}_in_mig.csv')
         file = [i for i in file_list if target_state[0] in i][0]
 
         df = pd.read_csv(file)
 
     elif target_file == '_out_mig.csv':
-        file_list = get_contents_file_list(state_dir_list, target_file=f'{target_state[0]}_out_mig.csv')
+        file_list = get_target_file_list(state_dir_list, target_file=f'{target_state[0]}_out_mig.csv')
         file = [i for i in file_list if target_state[0] in i][0]
 
         df = pd.read_csv(file)
 
     else:
-        file_list = get_contents_file_list(state_dir_list, target_file=target_file)
+        file_list = get_target_file_list(state_dir_list, target_file=target_file)
         file = [i for i in file_list if target_state[0] in i][0]
 
         df = pd.read_csv(file)
