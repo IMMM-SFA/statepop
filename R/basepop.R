@@ -36,8 +36,6 @@ basepop <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, num.ages=
   tot.int.mig           <- data.frame(matrix(NA, nrow = 4*num.ages*(steps+1), ncol = length(regUAll)))
   colnames(tot.int.mig) <- regUAll
 
-
-
   # Loop over regions to update their base year population with international and state-level migrations
   for (regU in 1:length(regUAll)){
 
@@ -46,6 +44,7 @@ basepop <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, num.ages=
 
     #* Scenario data (The Constant_rate scenario. )
     scenarioS <- paste0(cur.scenario, ".csv")
+
     scenario  <- read.csv(file.path(pathIn, scenarioS), check.names = F, stringsAsFactors = F)  # Input data directory
 
     #* Base Population data
