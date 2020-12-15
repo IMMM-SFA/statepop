@@ -7,6 +7,9 @@
 basepop(
   inputsPath,
   regUAll,
+  yearStart = 2010,
+  yearEnd = 2100,
+  num.ages = 101,
   cur.scenario = "Constant_rate",
   scen.factor = 1,
   int.mig = FALSE
@@ -16,6 +19,12 @@ basepop(
 \item{inputsPath}{Input folder containing state subdirectories}
 
 \item{regUAll}{Array containing state subfolder names}
+
+\item{yearStart}{Start year for data processing}
+
+\item{yearEnd}{Through year for data processing}
+
+\item{num.ages}{Number of ages (come back and fix this)}
 
 \item{cur.scenario}{Current scenario rate (constant rate, etc.)}
 
