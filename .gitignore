@@ -1,15 +1,7 @@
 # all R files
-/multistate
 /python_scripts
 /r_scripts
 /old_dnu
-
-# all state directories
-/statepop/data
-
-#.gitignore
-statepop/.gitignore
-.gitignore
 
 # History files
 .Rhistory
