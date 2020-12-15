@@ -1,9 +1,22 @@
-# system files
-.DS_Store
+# all R files
+/multistate
+/python_scripts
+/r_scripts
+/statepop.Rproj
+/old_dnu
+
+# all state directories
+/statepop/data
+
+#.gitignore
+statepop/.gitignore
+.gitignore
 
 # History files
 .Rhistory
 .Rapp.history
+multistate/.Rhistory
+
 # Session Data files
 .RData
 # Example code in package build process
@@ -136,4 +149,3 @@ venv.bak/
 dmypy.json
 # Pyre type checker
 .pyre/
-
