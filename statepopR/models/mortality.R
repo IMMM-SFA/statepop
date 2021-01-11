@@ -1,12 +1,14 @@
 #' Function to generate mortality matrices.
 #'
 #' @param pathIn      Input folder containing state subdirectories
-#' @param scenario    Target population scenario
+#' @param cur.scenario    Target population scenario
 #' @param regUAll     Array containing state subfolder names
-#' @return            Mortality matrices (6).
+#' @param generate.output Optional, supply file path+name to generate output csv.
+#' @importFrom multistate f.linIntE f.e0 f.lIntC f.mxMax
+#' @return            Mortality matrix (1).
 #' @export
 #'
-mortality <- function(pathIn, scenario, regUAll){
+mortality <- function(pathIn, regUAll, cur.scenario="Constant_rate", gen.output=NULL){
 
   # Initialize total matrices
   tot.dfdx <- NULL
@@ -24,7 +26,7 @@ mortality <- function(pathIn, scenario, regUAll){
     pathIn      <- file.path(inputsPath, regUAll[regU])  # Input data directory
 
     #* Scenario data
-    scenarioS   <- paste0(scenUAll[1], ".csv")
+    scenarioS   <- paste0(cur.scenario, ".csv")
     scenario    <- read.csv(file.path(pathIn, scenarioS), check.names = F, stringsAsFactors = F)  # Input data directory
 
     #* Mortality data
@@ -271,5 +273,12 @@ mortality <- function(pathIn, scenario, regUAll){
     tot.dfSx <- rbind(tot.dfSx, dfSx)
     tot.dfex <- rbind(tot.dfex, dfex)
   }
-  return(list(tot.dfdx, tot.dfLx, tot.dfmx, tot.dfTx, tot.dfSx, tot.dfex))
+
+  if (!is.null(gen.output)) {
+    # Write the total mortality rate (% per age over last year) table to a csv file
+    write.csv(tot.dfmx, gen.output, row.names = FALSE)
+  }
+
+  # we don't ever use the above matrices again (except for tot.dfmx)
+  return(tot.dfmx)
 }

@@ -8,12 +8,13 @@
 #' @param cur.scenario    Current scenario rate (constant rate, etc.)
 #' @param scen.factor     Target population scenario
 #' @param int.mig         International migration rate (boolean, False = not applied)
+#' @param gen.output      Optional, supply file path+name to generate output csv.
 #' @return                DataFrame containing baseline population matrix
 #' @importFrom multistate f.in.dom.mig.calc f.out.dom.mig.calc
 #' @export
 #'
 basepop <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, num.ages=101,
-                    cur.scenario="Constant_rate", scen.factor=1, int.mig=FALSE){
+                    cur.scenario="Constant_rate", scen.factor=1, int.mig=FALSE, gen.output=NULL){
 
   steps     <- yearEnd - yearStart
 
@@ -126,5 +127,12 @@ basepop <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, num.ages=
   tot.state.out.mig <- rbind(tot.state.out.mig, out.migration)
   tot.state.net.mig <- rbind(tot.state.net.mig, net.migration)
 
+  if (!is.null(gen.output)) {
+    # Write the total baseline population table to a csv file
+    write.csv(tot.state.net.mig, gen.output, row.names = FALSE)
+  }
+
   return(tot.state.net.mig)
 }
+
+

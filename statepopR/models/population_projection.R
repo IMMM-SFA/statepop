@@ -3,11 +3,12 @@
 #' @param pathIn          Input folder containing state subdirectories
 #' @param scen.factor     (float), domestic migration factor. 0=none, .5=half scenario, 1=regular, 2=double scenario.
 #' @param regUAll         Array containing state subfolder names
-#' @param generate.output Boolean, generate output csv or not.
+#' @param cur.scenario    Target population scenario
+#' @param gen.output      Optional, supply file path+name to generate output csv.
 #' @return                DataFrame containing population projection matrix
 #' @export
 #'
-pop.projection <- function(pathIn, scen.factor=1.0, regUAll, generate.output=FALSE){
+pop.projection <- function(pathIn, regUAll, scen.factor=1.0, cur.scenario="Constant_rate", gen.output=NULL){
 
   #* The dataframe that contains updated population based on international and state-level migrations at each step
   upd.pop <- as.data.frame(matrix(0, nrow = num.ages * 4, ncol = length(regUAll)))
@@ -41,7 +42,7 @@ pop.projection <- function(pathIn, scen.factor=1.0, regUAll, generate.output=FAL
       pathIn      <- file.path(inputsPath, regUAll[regU])  # Input data directory
 
       #* Scenario data
-      scenarioS   <- paste0(scenUAll[1], ".csv")
+      scenarioS   <- paste0(cur.scenario, ".csv")
       scenario    <- read.csv(file.path(pathIn, scenarioS), check.names = F, stringsAsFactors = F)  # Input data directory
 
       #* International migration data
@@ -59,7 +60,7 @@ pop.projection <- function(pathIn, scen.factor=1.0, regUAll, generate.output=FAL
       nMigMt     <- as.numeric(scenario[scenario$year%in%c(yearStart:yearEnd), "nim_M"]) # male net international migrants
 
       # Modify the constant rate scenario international migration assumptions if current scenario is something else
-      if (cur.scenario != scenUAll[1]){
+      if (cur.scenario != "Constant_rate"){
 
         # Retrive the national-level changes of net international migration according to the current scenario
         net.int.mig.f.rate <- cumprod(scenario.table[, "Int_Mig_change"])

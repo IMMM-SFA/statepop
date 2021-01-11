@@ -1,13 +1,14 @@
 #' Function to generate fertility matrix.
 #'
 #' @param pathIn          Input folder containing state subdirectories
-#' @param scenario        Target population scenario
+#' @param cur.scenario    Target population scenario
 #' @param regUAll         Array containing state subfolder names
-#' @param generate.output Boolean, generate output csv or not.
+#' @param gen.output      Optional, supply file path+name to generate output csv.
+#' @importFrom multistate f.linIntE f.lInt
 #' @return                DataFrame containing fertility matrix
 #' @export
 #'
-fertility <- function(pathIn, scenario, regUAll, generate.output=FALSE){
+fertility <- function(pathIn, regUAll, cur.scenario="Constant_rate", gen.output=NULL){
 
   #Initialize the overall fertility table
   tot.fert <- NULL
@@ -20,7 +21,7 @@ fertility <- function(pathIn, scenario, regUAll, generate.output=FALSE){
     pathIn      <- file.path(inputsPath, regUAll[regU])  # Input data directory
 
     #* Scenario data
-    scenarioS   <- paste0(scenUAll[1], ".csv")
+    scenarioS   <- paste0(cur.scenario, ".csv")
     scenario    <- read.csv(file.path(pathIn, scenarioS), check.names = F, stringsAsFactors = F)  # Input data directory
 
     #* Fertility data in the base year
@@ -219,10 +220,9 @@ fertility <- function(pathIn, scenario, regUAll, generate.output=FALSE){
     tot.fert <- rbind(tot.fert, datFert)
   }
 
-  if (generate.output=TRUE) {
+  if (!is.null(gen.output)) {
     # Write the total fertility table to a csv file
-    tot.fert.csv <- file.path(resultsPath, "tot.fert.csv")
-    write.csv(tot.fert, tot.fert.csv, row.names = FALSE)
+    write.csv(tot.fert, gen.output, row.names = FALSE)
   }
 
   return(tot.fert)
