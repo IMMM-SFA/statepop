@@ -12,7 +12,8 @@ basepop(
   num.ages = 101,
   cur.scenario = "Constant_rate",
   scen.factor = 1,
-  int.mig = FALSE
+  int.mig = FALSE,
+  gen.output = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ basepop(
 \item{scen.factor}{Target population scenario}
 
 \item{int.mig}{International migration rate (boolean, False = not applied)}
+
+\item{gen.output}{Optional, supply file path+name to generate output csv.}
 }
 \value{
 DataFrame containing baseline population matrix
