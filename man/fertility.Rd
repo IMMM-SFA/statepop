@@ -12,7 +12,7 @@ fertility(
   cur.scenario = "Constant_rate",
   gen.output = NULL,
   useBrassf = T,
-  vis = T
+  vis = F
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ fertility(
 
 \item{yearEnd}{Through year for data processing}
 
-\item{cur.scenario}{Target population scenario}
+\item{cur.scenario}{Current scenario rate (constant rate, etc.)}
 
 \item{gen.output}{Optional, supply file path+name to generate output csv.}
 

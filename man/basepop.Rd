@@ -12,7 +12,7 @@ basepop(
   num.ages = 101,
   cur.scenario = "Constant_rate",
   scen.factor = 1,
-  int.mig = FALSE,
+  int.mig = 0,
   gen.output = NULL
 )
 }

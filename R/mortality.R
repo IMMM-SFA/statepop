@@ -2,19 +2,18 @@
 #'
 #' @param inputsPath     Input folder containing state subdirectories
 #' @param regUAll     Array containing state subfolder names
-#' @param cur.scenario    Target population scenario
+#' @param cur.scenario    Current scenario rate (constant rate, etc.)
 #' @param datMortS30S     UN Standard 30-year life table
 #' @param datMortS100S    UN Standard 100-year life table
 #' @param yearStart       Start year for data processing
 #' @param yearEnd         Through year for data processing
-#' @param generate.output Optional, supply file path+name to generate output csv.
+#' @param gen.output Optional, supply file path+name to generate output csv.
 #' @param vis             (Boolean) Should details for projection model adjustment be printed?
 #' @importFrom multistate f.linIntE f.e0 f.lIntC f.mxMax
 #' @return            Mortality matrix (1).
 #' @export
-#'
 mortality <- function(inputsPath, regUAll, datMortS30S, datMortS100S,
-                      yearStart=2010, yearEnd=2100, cur.scenario="Constant_rate", gen.output=NULL, vis=T){
+                      yearStart=2010, yearEnd=2100, cur.scenario="Constant_rate", gen.output=NULL, vis=F){
 
   steps <- yearEnd - yearStart
   datMortS100  <- read.csv(datMortS100S, check.names = F, stringsAsFactors = F)
@@ -29,8 +28,6 @@ mortality <- function(inputsPath, regUAll, datMortS30S, datMortS100S,
   tot.dfex <- NULL
 
   for (regU in 1:length(regUAll)){
-
-    cat(paste("\nMortality for", regUAll[regU]))
 
     #* Generate paths
     pathIn      <- file.path(inputsPath, regUAll[regU])  # Input data directory

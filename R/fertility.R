@@ -1,7 +1,7 @@
 #' Function to generate fertility matrix.
 #'
 #' @param pathIn          Input folder containing state subdirectories
-#' @param cur.scenario    Target population scenario
+#' @param cur.scenario    Current scenario rate (constant rate, etc.)
 #' @param regUAll         Array containing state subfolder names
 #' @param yearStart       Start year for data processing
 #' @param yearEnd         Through year for data processing
@@ -12,7 +12,7 @@
 #' @return                DataFrame containing fertility matrix
 #' @export
 fertility <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100,
-                      cur.scenario="Constant_rate", gen.output=NULL, useBrassf=T, vis=T){
+                      cur.scenario="Constant_rate", gen.output=NULL, useBrassf=T, vis=F){
 
   steps <- yearEnd - yearStart
 
@@ -20,8 +20,6 @@ fertility <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100,
   tot.fert <- NULL
 
   for (regU in 1:length(regUAll)){
-
-    cat(paste("\nFertility for", regUAll[regU]))
 
     #* Generate paths
     pathIn      <- file.path(inputsPath, regUAll[regU])  # Input data directory

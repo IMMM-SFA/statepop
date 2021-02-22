@@ -4,16 +4,36 @@
 \alias{mortality}
 \title{Function to generate mortality matrices.}
 \usage{
-mortality(pathIn, regUAll, cur.scenario = "Constant_rate", gen.output = NULL)
+mortality(
+  inputsPath,
+  regUAll,
+  datMortS30S,
+  datMortS100S,
+  yearStart = 2010,
+  yearEnd = 2100,
+  cur.scenario = "Constant_rate",
+  gen.output = NULL,
+  vis = F
+)
 }
 \arguments{
-\item{pathIn}{Input folder containing state subdirectories}
+\item{inputsPath}{Input folder containing state subdirectories}
 
 \item{regUAll}{Array containing state subfolder names}
 
-\item{cur.scenario}{Target population scenario}
+\item{datMortS30S}{UN Standard 30-year life table}
 
-\item{generate.output}{Optional, supply file path+name to generate output csv.}
+\item{datMortS100S}{UN Standard 100-year life table}
+
+\item{yearStart}{Start year for data processing}
+
+\item{yearEnd}{Through year for data processing}
+
+\item{cur.scenario}{Current scenario rate (constant rate, etc.)}
+
+\item{gen.output}{Optional, supply file path+name to generate output csv.}
+
+\item{vis}{(Boolean) Should details for projection model adjustment be printed?}
 }
 \value{
 Mortality matrix (1).

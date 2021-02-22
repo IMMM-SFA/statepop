@@ -12,9 +12,8 @@
 #' @return                DataFrame containing baseline population matrix
 #' @importFrom multistate f.in.dom.mig.calc f.out.dom.mig.calc
 #' @export
-#'
 basepop <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, num.ages=101,
-                    cur.scenario="Constant_rate", scen.factor=1, int.mig=FALSE, gen.output=NULL){
+                    cur.scenario="Constant_rate", scen.factor=1, int.mig=0, gen.output=NULL){
 
   steps     <- yearEnd - yearStart
 
