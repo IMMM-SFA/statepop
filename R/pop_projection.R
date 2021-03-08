@@ -40,17 +40,17 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
   tot.state.out.mig <- NULL
 
   # Import some basepop data
-  upd.all.base.pop <- basepop(inputsPath=inputsPath, regUAll=regUAll, yearStart=yearStart, yearEnd=yearEnd,
-                              num.ages=num.ages, cur.scenario=cur.scenario, scen.factor=scen.factor,
-                              int.mig=int.mig, gen.output=gen.output)
+  upd.all.base.pop <- statepop::basepop(inputsPath=inputsPath, regUAll=regUAll, yearStart=yearStart, yearEnd=yearEnd,
+                                        num.ages=num.ages, cur.scenario=cur.scenario, scen.factor=scen.factor,
+                                        int.mig=int.mig, gen.output=gen.output)
 
   # Import fertility data
-  tot.fert = fertility(inputsPath=inputsPath, regUAll=regUAll, yearStart=yearStart, yearEnd=yearEnd,
-                       cur.scenario=cur.scenario, gen.output=gen.output)
+  tot.fert = statepop::fertility(inputsPath=inputsPath, regUAll=regUAll, yearStart=yearStart, yearEnd=yearEnd,
+                                 cur.scenario=cur.scenario, gen.output=gen.output)
 
   # Import mortality data
-  tot.dfmx = mortality(inputsPath=inputsPath, regUAll=regUAll, datMortS30S=datMortS30S, datMortS100S=datMortS100S,
-                       yearStart=yearStart, yearEnd=yearEnd, cur.scenario=cur.scenario, gen.output=gen.output)
+  tot.dfmx = statepop::mortality(inputsPath=inputsPath, regUAll=regUAll, datMortS30S=datMortS30S, datMortS100S=datMortS100S,
+                                 yearStart=yearStart, yearEnd=yearEnd, cur.scenario=cur.scenario, gen.output=gen.output)
 
   # Loop over regions to update their base year population with international and state-level migrations
   for (regU in 1:length(regUAll)){
@@ -71,7 +71,7 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
     mBP   <- c(rbind(datBP[1:num.ages, bpMU], datBP[1:num.ages, bpMR])) # males
     matBP <- as.matrix(c(fBP,mBP))                                      # combines female and male pieces
 
-    }
+  }
 
   # The outer loop that goes through years
   for (t in 1:steps){
@@ -130,8 +130,8 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
       } else {
 
         # Linearly interpolate 1-year total net international migration counts between 5-year intervals
-        nmdf1F <- f.linIntE(nMigFt, "nm", si = T, steps=steps)
-        nmdf1M <- f.linIntE(nMigMt, "nm", si = T, steps=steps)
+        nmdf1F <- multistate::f.linIntE(nMigFt, "nm", si = T, steps=steps)
+        nmdf1M <- multistate::f.linIntE(nMigMt, "nm", si = T, steps=steps)
       }
 
       # Spread migrant numbers according to profile
@@ -175,8 +175,8 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
 
       #* Linearly interpolate sex ratios between 5-year time steps at 1-year interval according to the scenario
       # Note: This generates a data frame with a "year" and "sr" column
-      srDf1R <- f.linIntE(srR, "sr", si=T, steps=steps) # rural
-      srDf1U <- f.linIntE(srU, "sr", si=T, steps=steps) # urban
+      srDf1R <- multistate::f.linIntE(srR, "sr", si=T, steps=steps) # rural
+      srDf1U <- multistate::f.linIntE(srU, "sr", si=T, steps=steps) # urban
 
       #* Compute Proportion male and females at birth according to the scenario
       # Rural
@@ -189,22 +189,22 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
       #* Compute matrix representation of mortality variables for the current state
       # Note: function writes relevant variables to global environment
       dfmx <- tot.dfmx[seq(1 + (regU - 1) * num.ages, regU * num.ages), ]
-      mlF  <- f.ltm(dfmx, datDomMig, t, "F") # Females
-      mlM  <- f.ltm(dfmx, datDomMig, t, "M") # Males
+      mlF  <- multistate::f.ltm(dfmx, datDomMig, t, "F") # Females
+      mlM  <- multistate::f.ltm(dfmx, datDomMig, t, "M") # Males
 
       #* Compute matrix representation of Birth rates (Bx)
       # Note: the female Sx values are used for the Bx computation for both males and females
       datFert <- tot.fert[seq(1 + (regU - 1) * num.ages, regU * num.ages), ]
-      mBxF    <- f.lBx(datFert, srDf1R, srDf1U, mlF$Lx, mlF$lx, mlF$Sx, t, "F")  # females
-      mBxM    <- f.lBx(datFert, srDf1R, srDf1U, mlM$Lx, mlM$lx, mlF$Sx, t, "M")  # males
+      mBxF    <- multistate::f.lBx(datFert, srDf1R, srDf1U, mlF$Lx, mlF$lx, mlF$Sx, t, "F")  # females
+      mBxM    <- multistate::f.lBx(datFert, srDf1R, srDf1U, mlM$Lx, mlM$lx, mlF$Sx, t, "M")  # males
 
       #* Generate transition matrix
       # Diagonal matrix pieces of Survival
       # Note: for the matrix computation step of the projection it is necessary that the transition matrix is quadratic
       #       in this case it is necessary to add two "0" value columns to account for the merge of the Bx and Sx matrices
       #       use bdiag() function from Matrix package to construct a block diagonal matrix
-      mSxFd <- cbind(as.matrix(bdiag(mlF$Sx)), 0, 0) # females
-      mSxMd <- cbind(as.matrix(bdiag(mlM$Sx)), 0, 0) # males
+      mSxFd <- cbind(as.matrix(Matrix::bdiag(mlF$Sx)), 0, 0) # females
+      mSxMd <- cbind(as.matrix(Matrix::bdiag(mlM$Sx)), 0, 0) # males
 
       # Horizontal matrix pieces of Birth
       mBxFd <- cbind(do.call(cbind, mBxF), 0, 0)     # females
@@ -262,42 +262,42 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
     }
   }
 
-    # Now that one year projection for all states has finished, state-level migration can be applied
-    if (cur.scenario != "Constant_rate"){
-      # State-level migration values are adjusted based on a factor that can be temporally variable
-      # SSP2: The factor is 1 and constant
-      # SSP3: The factor reduces from 1 to 0.5 gradually
-      # SSP5: The factor increases fron 1 to 2 until the year with maximum international migration and them remains constant
+  # Now that one year projection for all states has finished, state-level migration can be applied
+  if (cur.scenario != "Constant_rate"){
+    # State-level migration values are adjusted based on a factor that can be temporally variable
+    # SSP2: The factor is 1 and constant
+    # SSP3: The factor reduces from 1 to 0.5 gradually
+    # SSP5: The factor increases fron 1 to 2 until the year with maximum international migration and them remains constant
 
-      dom.mig.factor <- scenario.table[, "Dom_Mig_Factor"]
+    dom.mig.factor <- scenario.table[, "Dom_Mig_Factor"]
 
-      # Calculate the total in out and net migration numbers for all states
-      in.migration  <- f.in.dom.mig.calc(inputsPath, upd.pop, dom.mig.factor[t+1])
-      out.migration <- f.out.dom.mig.calc(inputsPath, upd.pop, dom.mig.factor[t+1])
-      net.migration <- in.migration - out.migration # People entered a state minus those who left
+    # Calculate the total in out and net migration numbers for all states
+    in.migration  <- multistate::f.in.dom.mig.calc(inputsPath, upd.pop, dom.mig.factor[t+1])
+    out.migration <- multistate::f.out.dom.mig.calc(inputsPath, upd.pop, dom.mig.factor[t+1])
+    net.migration <- in.migration - out.migration # People entered a state minus those who left
 
-    } else {
-      # The factor is constant based on the mechanical scenario (half, reg, double)
-      # Calculate the total in out and net migration numbers for all states
-      in.migration  <- f.in.dom.mig.calc(inputsPath, upd.pop, scen.factor)
-      out.migration <- f.out.dom.mig.calc(inputsPath, upd.pop, scen.factor)
-      net.migration <- in.migration - out.migration # People entered a state minus those who left
-    }
+  } else {
+    # The factor is constant based on the mechanical scenario (half, reg, double)
+    # Calculate the total in out and net migration numbers for all states
+    in.migration  <- multistate::f.in.dom.mig.calc(inputsPath, upd.pop, scen.factor)
+    out.migration <- multistate::f.out.dom.mig.calc(inputsPath, upd.pop, scen.factor)
+    net.migration <- in.migration - out.migration # People entered a state minus those who left
+  }
 
-    # Store the population before applying the domestic migration
-    tot.pop.no.dom <- rbind(tot.pop.no.dom, upd.pop)
+  # Store the population before applying the domestic migration
+  tot.pop.no.dom <- rbind(tot.pop.no.dom, upd.pop)
 
-    # Update the projected population with the state-level migration, this will be used for the next year
-    upd.pop <- upd.pop + net.migration
+  # Update the projected population with the state-level migration, this will be used for the next year
+  upd.pop <- upd.pop + net.migration
 
-    # Add the results of the current year for all states to the dataframe that contains population for all years (tot.projection)
-    colnames(matProj) <- c("age", "female", "urban", regUAll)
-    tot.projection    <- rbind(tot.projection, matProj)
+  # Add the results of the current year for all states to the dataframe that contains population for all years (tot.projection)
+  colnames(matProj) <- c("age", "female", "urban", regUAll)
+  tot.projection    <- rbind(tot.projection, matProj)
 
-    # Add net/in/out migration values
-    tot.state.in.mig  <- rbind(tot.state.in.mig, in.migration)
-    tot.state.out.mig <- rbind(tot.state.out.mig, out.migration)
-    tot.state.net.mig <- rbind(tot.state.net.mig, net.migration)
+  # Add net/in/out migration values
+  tot.state.in.mig  <- rbind(tot.state.in.mig, in.migration)
+  tot.state.out.mig <- rbind(tot.state.out.mig, out.migration)
+  tot.state.net.mig <- rbind(tot.state.net.mig, net.migration)
 
   if (!is.null(gen.output)) {
     # Write the total baseline population table to a csv file

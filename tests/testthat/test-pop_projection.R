@@ -29,7 +29,7 @@ test_that("Expect equal output", {
   print(dim(comp_proj))
 
   # Execute mortality using default settings, save as RDS for comparison, and reimport
-  proj <- pop.projection(inputsPath=inputsPath, regUAll=regUAll, yearStart=2010, yearEnd=2100, scen.factor=1, int.mig=FALSE)
+  proj <- pop.projection(inputsPath=inputsPath, regUAll=regUAll, yearStart=2010, yearEnd=2100, scen.factor=0, int.mig=FALSE)
 
   saveRDS(proj, "C:\\Users\\deci859\\PycharmProjects\\IM3\\statepop\\tests\\data\\comp_data\\tot_projection.rds")
   proj_rds <- readRDS("C:\\Users\\deci859\\PycharmProjects\\IM3\\statepop\\tests\\data\\comp_data\\tot_projection.rds")

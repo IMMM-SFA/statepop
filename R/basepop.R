@@ -130,7 +130,7 @@ basepop <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, num.ages=
     write.csv(tot.state.net.mig, gen.output, row.names = FALSE)
   }
 
-  return(tot.state.net.mig)
+  return(tot.state.net.mig, )
 }
 
 
