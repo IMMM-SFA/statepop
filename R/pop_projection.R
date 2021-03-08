@@ -45,11 +45,11 @@ pop.projection <- function(inputsPath, regUAll, yearStart=2010, yearEnd=2100, sc
                                         int.mig=int.mig, gen.output=gen.output)
 
   # Import fertility data
-  tot.fert = statepop::fertility(inputsPath=inputsPath, regUAll=regUAll, yearStart=yearStart, yearEnd=yearEnd,
+  tot.fert <- statepop::fertility(inputsPath=inputsPath, regUAll=regUAll, yearStart=yearStart, yearEnd=yearEnd,
                                  cur.scenario=cur.scenario, gen.output=gen.output)
 
   # Import mortality data
-  tot.dfmx = statepop::mortality(inputsPath=inputsPath, regUAll=regUAll, datMortS30S=datMortS30S, datMortS100S=datMortS100S,
+  tot.dfmx <- statepop::mortality(inputsPath=inputsPath, regUAll=regUAll, datMortS30S=datMortS30S, datMortS100S=datMortS100S,
                                  yearStart=yearStart, yearEnd=yearEnd, cur.scenario=cur.scenario, gen.output=gen.output)
 
   # Loop over regions to update their base year population with international and state-level migrations
